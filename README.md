@@ -1,18 +1,16 @@
-IOPn Builder Hub 
+IOPn Builder Hub ⚡
 
-A lightweight on-chain builder activity hub built on OPN Chain.
+A lightweight on-chain builder activity, community engagement, and DeFi experimentation hub built on OPN Chain.
 
 Overview
 
-IOPn Builder Hub is a simple demonstration of on-chain participation and community interaction.
+IOPn Builder Hub combines builder participation, community interaction, and DeFi learning tools into a single on-chain experience.
 
-The project combines daily builder activity tracking and an on-chain guestbook into a single experience.
-
-Built for experimentation, learning, and ecosystem participation on OPN Chain.
+The project is designed to explore verifiable on-chain activity while providing simple tools for builders to interact, contribute, and experiment within the OPN ecosystem.
 
 Features
 
-Daily Activity
+⚡ Daily Activity
 
 Track builder participation directly on-chain.
 
@@ -22,30 +20,40 @@ Available actions:
 - Ship
 - View Personal Activity Stats
 
-Community Guestbook
+📝 Community Guestbook
 
-Leave a simple on-chain message and participate in the builder community.
+Leave a permanent message on-chain and participate in the builder community.
 
 Available actions:
 
 - Send Message
-- View Guestbook Activity
+- Community Interaction
+
+💰 DeFi Lab
+
+Experiment with token creation on OPN Chain.
+
+Available actions:
+
+- Create Token
+- View Created Tokens
+- Token Registry
 
 Smart Contracts
 
 IOPnEngageHub
 
-Tracks builder activity and participation.
+Tracks builder participation and activity.
 
 Functions:
 
-- "dailyCheckIn()"
-- "ship()"
-- "getMyStats()"
+- dailyCheckIn()
+- ship()
+- getMyStats()
 
 Contract Address:
 
-"0x181C4893293636ECC89C3EF018791481d74B5450"
+0x181C4893293636ECC89C3EF018791481d74B5450
 
 ---
 
@@ -55,11 +63,27 @@ Simple on-chain guestbook for community interaction.
 
 Functions:
 
-- "leaveMessage()"
+- leaveMessage()
 
 Contract Address:
 
-"0xF339E39c96df9Ca92145123604EEca69C156cd01"
+0xF339E39c96df9Ca92145123604EEca69C156cd01
+
+---
+
+DeFiLabFactory
+
+Token creation factory for DeFi experimentation.
+
+Functions:
+
+- createToken()
+- getAllTokens()
+- getMyTokens()
+
+Contract Address:
+
+0xEA808893F9abd6CbfDBd2F67FAFc4cbC0E55F43a
 
 Demo
 
@@ -74,16 +98,31 @@ Technology Stack
 - GitHub Pages
 - OPN Chain Testnet
 
-Vision
+Roadmap
 
-IOPn Builder Hub explores how builders can create verifiable on-chain activity through simple participation tools and community interaction.
+Phase 1 — Foundation
 
-Future iterations may include:
+- Daily builder activity tracking
+- On-chain community guestbook
+- Unified builder hub experience
 
-- Builder Profiles
-- Reputation Systems
-- Achievement Badges
-- DeFi Lab Experiments
+Phase 2 — DeFi Lab
+
+- Token Factory
+- Token Dashboard
+- Token Discovery
+- Asset Creation Experiments
+
+Phase 3 — Open Finance
+
+- Pool Factory
+- Liquidity Experiments
+- Swap Functionality
+- Financial Primitives
+
+Long-Term Vision
+
+IOPn Builder Hub aims to become a lightweight builder participation layer where activity, community interaction, and open finance experimentation can be transparently recorded and explored on OPN Chain.
 
 Built on OPN Chain
 
