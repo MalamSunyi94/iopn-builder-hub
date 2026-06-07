@@ -246,33 +246,75 @@
     </div>
 
     <div class="section">
-      <h2>DeFi Lab</h2>
-      <p>Create experimental tokens directly on OPN Chain.</p>
+  <h2>💰 DeFi Lab</h2>
 
-      <input
-        type="text"
-        id="tokenName"
-        placeholder="Token Name"
-      />
+  <p>
+    Explore token creation and liquidity pool experiments on OPN Chain.
+  </p>
 
-      <input
-        type="text"
-        id="tokenSymbol"
-        placeholder="Token Symbol"
-      />
+  <input
+    type="text"
+    id="tokenName"
+    placeholder="Token Name"
+  />
 
-      <input
-        type="number"
-        id="tokenSupply"
-        placeholder="Token Supply"
-      />
+  <input
+    type="text"
+    id="tokenSymbol"
+    placeholder="Token Symbol"
+  />
 
-      <div class="grid">
-        <button onclick="createToken()">Create Token</button>
-        <button class="dark-btn" onclick="openDeFiExplorer()">DeFi Contract</button>
-      </div>
+  <input
+    type="number"
+    id="tokenSupply"
+    placeholder="Token Supply"
+  />
+
+  <div class="grid">
+    <button onclick="createToken()">
+      Create Token
+    </button>
+
+    <button class="dark-btn"
+      onclick="openDeFiExplorer()">
+      Token Factory
+    </button>
+  </div>
+
+  <hr style="
+    margin:20px 0;
+    border:0;
+    border-top:1px solid rgba(255,255,255,.1);
+  ">
+
+  <div class="stats">
+    <div class="stat">
+      <h3>✓</h3>
+      <span>Token Factory</span>
     </div>
 
+    <div class="stat">
+      <h3>✓</h3>
+      <span>Pool Factory</span>
+    </div>
+  </div>
+
+  <div class="grid">
+    <button class="dark-btn"
+      onclick="openPoolFactory()">
+      Pool Factory
+    </button>
+
+    <button class="dark-btn" disabled>
+      Swap (Soon)
+    </button>
+  </div>
+
+  <p style="margin-top:16px;color:#9f9f9f;">
+    Roadmap:
+    Add Liquidity → Swap OPN ↔ Token
+  </p>
+    </div>
     <div class="section">
       <h2>Contracts</h2>
 
@@ -303,7 +345,8 @@
 const engageAddress = "0x181C4893293636ECC89C3EF018791481d74B5450";
 const guestbookAddress = "0xF339E39c96df9Ca92145123604EEca69C156cd01";
 const defiFactoryAddress = "0xEA808893F9abd6CbfDBd2F67FAFc4cbC0E55F43a";
-
+const poolFactoryAddress = "0xba657f29A2f58b5Ef98B0FCBD60f0403ADD2eD66";
+  
 const opnChain = {
   chainId: "0x3D8",
   chainName: "IOPn Testnet",
@@ -590,6 +633,16 @@ function openDeFiExplorer() {
     "https://testnet.iopn.tech/address/" + defiFactoryAddress,
     "_blank"
   );
+
+  function openPoolFactory() {
+
+  window.open(
+    "https://testnet.iopn.tech/address/" +
+    poolFactoryAddress,
+    "_blank"
+  );
+
+  }
 }
 </script>
 
