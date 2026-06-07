@@ -246,60 +246,52 @@
     </div>
 
     <div class="section">
-     h2> DeFi Lab DEX</h2>
-      <p>
-Create tokens and liquidity pools on OPN Chain. The foundation for future DeFi experiments.
-</p>
+  <h2>💰 DeFi Lab DEX</h2>
 
-      <input
-        type="text"
-        id="tokenName"
-        placeholder="Token Name"
-      />
+  <p>
+    Create tokens and liquidity pools on OPN Chain.
+  </p>
 
-      <input
-        type="text"
-        id="tokenSymbol"
-        placeholder="Token Symbol"
-      />
+  <input
+    type="text"
+    id="tokenName"
+    placeholder="Token Name"
+  />
 
-      <input
-        type="number"
-        id="tokenSupply"
-        placeholder="Token Supply"
-      />
+  <input
+    type="text"
+    id="tokenSymbol"
+    placeholder="Token Symbol"
+  />
 
-      <div class="grid">
-        <button onclick="createToken()">Create Token</button>
-        <button class="dark-btn" onclick="openDeFiExplorer()">DeFi Contract</button>
-      </div>
-    </div>
+  <input
+    type="number"
+    id="tokenSupply"
+    placeholder="Token Supply"
+  />
 
-<div class="stats">
-  <div class="stat">
-    <h3>✓</h3>
-    <span>Token Factory</span>
+  <div class="grid">
+    <button onclick="createToken()">Create Token</button>
+    <button class="dark-btn" onclick="openDeFiExplorer()">Token Factory</button>
   </div>
 
-  <div class="stat">
-    <h3>✓</h3>
-    <span>Pool Factory</span>
+  <hr style="margin:20px 0;border:0;border-top:1px solid rgba(255,255,255,.1);">
+
+  <input
+    type="text"
+    id="poolTokenAddress"
+    placeholder="Token Address for Pool"
+  />
+
+  <div class="grid">
+    <button onclick="createPool()">Create Pool</button>
+    <button class="dark-btn" onclick="openPoolFactory()">Pool Factory</button>
   </div>
+
+  <p style="margin-top:16px;color:#9f9f9f;">
+    Next: Add Liquidity → Swap OPN ↔ Token
+  </p>
 </div>
-
-<div class="grid">
-  <button class="dark-btn" onclick="openPoolFactory()">
-    Pool Factory
-  </button>
-
-  <button class="dark-btn" disabled>
-    Swap (Soon)
-  </button>
-</div>
-
-<p style="margin-top:16px;color:#9f9f9f;">
-  Roadmap: Add Liquidity → Swap OPN ↔ Token
-</p>
 
     <div class="section">
       <h2>Contracts</h2>
@@ -368,11 +360,16 @@ const defiAbi = [
   "function getMyTokens() external view returns(address[] memory)"
 ];
 
+const poolFactoryAbi = [
+  "function createPool(address tokenAddress) external returns(address)"
+];
+
 let provider;
 let signer;
 let engageContract;
 let guestbookContract;
 let defiContract;
+let poolFactoryContract;
 
 function getEthereumProvider() {
   if (window.ethereum?.providers?.length) {
@@ -434,6 +431,12 @@ async function connectWallet() {
       signer
     );
 
+    poolFactoryContract = new ethers.Contract(
+      poolFactoryAddress,
+      poolFactoryAbi,
+      signer
+    );
+
     const address = await signer.getAddress();
 
     document.getElementById("walletBox").innerText =
@@ -462,9 +465,9 @@ async function ensureConnected() {
 
   await switchToOPN(ethProvider);
 
-  if (!engageContract || !guestbookContract || !defiContract) {
-    await connectWallet();
-  }
+  if (!engageContract || !guestbookContract || !defiContract || !poolFactoryContract) {
+  await connectWallet();
+}
 
   return true;
 }
@@ -598,6 +601,37 @@ async function getStats() {
 
   } catch (error) {
     alert("Failed to fetch stats.");
+  }
+}
+
+async function createPool() {
+  try {
+    const ready = await ensureConnected();
+    if (!ready) return;
+
+    const tokenAddress =
+      document.getElementById("poolTokenAddress").value;
+
+    if (!tokenAddress) {
+      alert("Enter token address.");
+      return;
+    }
+
+    document.getElementById("status").innerText =
+      "Creating pool...";
+
+    const tx =
+      await poolFactoryContract.createPool(tokenAddress);
+
+    await tx.wait();
+
+    document.getElementById("status").innerText =
+      "Pool created successfully.";
+
+    document.getElementById("poolTokenAddress").value = "";
+
+  } catch (error) {
+    alert("Pool creation failed. Make sure the token address is valid and not already used.");
   }
 }
 
