@@ -10,80 +10,25 @@ The project is designed to explore verifiable on-chain activity while providing 
 
 Features
 
-⚡ Daily Activity
-
-Track builder participation directly on-chain.
-
-Available actions:
+⚡ Builder Hub
 
 - Daily Check-In
-- Ship
-- View Personal Activity Stats
+- Ship Tracking
+- Builder Statistics
 
-📝 Community Guestbook
+📝 Community
 
-Leave a permanent message on-chain and participate in the builder community.
+- On-Chain Guestbook
 
-Available actions:
+💰 DeFi Lab DEX
 
-- Send Message
-- Community Interaction
+- Token Factory
+- Pool Factory
 
-💰 DeFi Lab
+🔜 Coming Soon
 
-Experiment with token creation on OPN Chain.
-
-Available actions:
-
-- Create Token
-- View Created Tokens
-- Token Registry
-
-Smart Contracts
-
-IOPnEngageHub
-
-Tracks builder participation and activity.
-
-Functions:
-
-- dailyCheckIn()
-- ship()
-- getMyStats()
-
-Contract Address:
-
-0x181C4893293636ECC89C3EF018791481d74B5450
-
----
-
-OPNGuestbook
-
-Simple on-chain guestbook for community interaction.
-
-Functions:
-
-- leaveMessage()
-
-Contract Address:
-
-0xF339E39c96df9Ca92145123604EEca69C156cd01
-
----
-
-DeFiLabFactory
-
-Token creation factory for DeFi experimentation.
-
-Functions:
-
-- createToken()
-- getAllTokens()
-- getMyTokens()
-
-Contract Address:
-
-0xEA808893F9abd6CbfDBd2F67FAFc4cbC0E55F43a
+- Add Liquidity
+- OPN ↔ Token Swaps
 
 Demo
 
@@ -100,30 +45,33 @@ Technology Stack
 
 Roadmap
 
-Phase 1 — Foundation
+Phase 1 — Builder Hub ✅
 
-- Daily builder activity tracking
-- On-chain community guestbook
-- Unified builder hub experience
+Daily Check-In
+Ship Tracking
+Builder Activity Dashboard
+On-Chain Guestbook
 
-Phase 2 — DeFi Lab
+Phase 2 — DeFi Lab DEX ( LIVE )
 
-- Token Factory
-- Token Dashboard
-- Token Discovery
-- Asset Creation Experiments
+Token Factory
+Pool Factory
+Token Registry
+Pool Registry
 
-Phase 3 — Open Finance
+Phase 3 — Liquidity ( SOON )
 
-- Pool Factory
-- Liquidity Experiments
-- Swap Functionality
-- Financial Primitives
+Add Liquidity
+Reserve Tracking
+Pool Analytics
 
+Phase 4 — Swaps ( SOON)
+
+OPN ↔ Token Swaps
+Price Discovery
+Swap Interface
 Long-Term Vision
 
-IOPn Builder Hub aims to become a lightweight builder participation layer where activity, community interaction, and open finance experimentation can be transparently recorded and explored on OPN Chain.
-
-Built on OPN Chain
-
-Accelerate ⋂
+Open Finance Experiments on OPN Chain
+Community-Driven Liquidity
+Builder Reputation & DeFi Integration
