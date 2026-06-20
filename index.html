@@ -288,11 +288,53 @@
     <button class="dark-btn" onclick="openPoolFactory()">Pool Factory</button>
   </div>
 
-  <p style="margin-top:16px;color:#9f9f9f;">
-    Next: Add Liquidity → Swap OPN ↔ Token
-  </p>
-</div>
+      <div class="section">
+  <h2>💧 Add Liquidity</h2>
 
+  <p>
+    Supply OPN and tokens into a DeFiPool.
+  </p>
+
+  <input
+    type="text"
+    id="liquidityPoolAddress"
+    placeholder="Pool Address"
+  />
+
+  <input
+    type="text"
+    id="liquidityTokenAddress"
+    placeholder="Token Address"
+  />
+
+  <input
+    type="number"
+    id="liquidityTokenAmount"
+    placeholder="Token Amount"
+  />
+
+  <input
+    type="number"
+    id="liquidityNativeAmount"
+    placeholder="OPN Amount"
+  />
+
+  <div class="grid">
+    <button onclick="approveLiquidityToken()">
+      Approve Token
+    </button>
+
+    <button onclick="addLiquidity()">
+      Add Liquidity
+    </button>
+  </div>
+      </div>
+
+  <p style="margin-top:16px;color:#9f9f9f;">
+  Next: Swap OPN ↔ Token
+  </p>
+    </div>
+      
     <div class="section">
       <h2>Contracts</h2>
 
@@ -325,6 +367,14 @@ const guestbookAddress = "0xF339E39c96df9Ca92145123604EEca69C156cd01";
 const defiFactoryAddress = "0xEA808893F9abd6CbfDBd2F67FAFc4cbC0E55F43a";
 const poolFactoryAddress =
 "0xba657f29A2f58b5Ef98B0FCBD60f0403ADD2eD66";
+  const erc20Abi = [
+  "function approve(address spender,uint256 amount) external returns(bool)"
+];
+
+const poolAbi = [
+  "function addLiquidity(uint256 tokenAmount) external payable",
+  "function getReserves() external view returns(uint256,uint256)"
+];
 
 const opnChain = {
   chainId: "0x3D8",
@@ -632,6 +682,122 @@ async function createPool() {
 
   } catch (error) {
     alert("Pool creation failed. Make sure the token address is valid and not already used.");
+  }
+}
+
+  async function approveLiquidityToken() {
+
+  try {
+
+    const ready = await ensureConnected();
+    if (!ready) return;
+
+    const tokenAddress =
+      document.getElementById(
+        "liquidityTokenAddress"
+      ).value;
+
+    const poolAddress =
+      document.getElementById(
+        "liquidityPoolAddress"
+      ).value;
+
+    const tokenAmount =
+      document.getElementById(
+        "liquidityTokenAmount"
+      ).value;
+
+    if (
+      !tokenAddress ||
+      !poolAddress ||
+      !tokenAmount
+    ) {
+      alert("Complete all fields.");
+      return;
+    }
+
+    const token = new ethers.Contract(
+      tokenAddress,
+      erc20Abi,
+      signer
+    );
+
+    document.getElementById("status").innerText =
+      "Approving token...";
+
+    const tx = await token.approve(
+      poolAddress,
+      ethers.utils.parseEther(tokenAmount)
+    );
+
+    await tx.wait();
+
+    document.getElementById("status").innerText =
+      "Token approved successfully.";
+
+  } catch (error) {
+
+    alert("Approve failed.");
+
+  }
+}
+
+async function addLiquidity() {
+
+  try {
+
+    const ready = await ensureConnected();
+    if (!ready) return;
+
+    const poolAddress =
+      document.getElementById(
+        "liquidityPoolAddress"
+      ).value;
+
+    const tokenAmount =
+      document.getElementById(
+        "liquidityTokenAmount"
+      ).value;
+
+    const nativeAmount =
+      document.getElementById(
+        "liquidityNativeAmount"
+      ).value;
+
+    if (
+      !poolAddress ||
+      !tokenAmount ||
+      !nativeAmount
+    ) {
+      alert("Complete all fields.");
+      return;
+    }
+
+    const pool = new ethers.Contract(
+      poolAddress,
+      poolAbi,
+      signer
+    );
+
+    document.getElementById("status").innerText =
+      "Adding liquidity...";
+
+    const tx = await pool.addLiquidity(
+      ethers.utils.parseEther(tokenAmount),
+      {
+        value: ethers.utils.parseEther(nativeAmount)
+      }
+    );
+
+    await tx.wait();
+
+    document.getElementById("status").innerText =
+      "Liquidity added successfully.";
+
+  } catch (error) {
+
+    alert("Add liquidity failed.");
+
   }
 }
 
