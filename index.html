@@ -655,7 +655,9 @@ async function getStats() {
 }
 
 async function createPool() {
+async function createPool() {
   try {
+
     const ready = await ensureConnected();
     if (!ready) return;
 
@@ -673,15 +675,38 @@ async function createPool() {
     const tx =
       await poolFactoryContract.createPool(tokenAddress);
 
-    await tx.wait();
+    const receipt = await tx.wait();
+
+    const event = receipt.events.find(
+      e => e.event === "PoolCreated"
+    );
+
+    const poolAddress = event.args.pool;
 
     document.getElementById("status").innerText =
-      "Pool created successfully.";
+      "Pool created: " + poolAddress;
 
-    document.getElementById("poolTokenAddress").value = "";
+    alert(
+      "Pool created successfully!\n\nPool Address:\n" +
+      poolAddress
+    );
+
+    document.getElementById(
+      "liquidityPoolAddress"
+    ).value = poolAddress;
+
+    document.getElementById(
+      "poolTokenAddress"
+    ).value = "";
 
   } catch (error) {
-    alert("Pool creation failed. Make sure the token address is valid and not already used.");
+
+    console.error(error);
+
+    alert(
+      "Pool creation failed."
+    );
+
   }
 }
 
