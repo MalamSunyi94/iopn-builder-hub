@@ -698,15 +698,17 @@ async function createPool() {
       "poolTokenAddress"
     ).value = "";
 
-  } catch (error) {
+catch (error) {
 
-    console.error(error);
+  console.log(error);
 
-    alert(
-      "Pool creation failed."
-    );
+  alert(
+    error.reason ||
+    error.error?.message ||
+    error.data?.message ||
+    error.message
+  );
 
-  }
 }
 
   async function approveLiquidityToken() {
