@@ -704,7 +704,7 @@ document.getElementById("status").innerText =
 
 document.getElementById("poolTokenAddress").value = "";
 
-  } catch(error) {
+  } catch (error) {
 
     console.log(error);
 
@@ -766,8 +766,12 @@ document.getElementById("poolTokenAddress").value = "";
       "Token approved successfully.";
 
   } catch (error) {
+  console.log(error);
 
-    alert("Approve failed.");
+  alert(
+    error.reason ||
+    error.message ||
+    "Approve failed");
 
   }
 }
@@ -824,9 +828,13 @@ async function addLiquidity() {
     document.getElementById("status").innerText =
       "Liquidity added successfully.";
 
-  } catch (error) {
+  } catch(error) {
+  console.log(error);
 
-    alert("Add liquidity failed.");
+  alert(
+    error.reason ||
+    error.message ||
+    "Approve failed");
 
   }
 }
