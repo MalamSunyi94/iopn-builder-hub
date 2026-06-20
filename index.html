@@ -319,6 +319,12 @@
     placeholder="OPN Amount"
   />
 
+   <input
+  id="createdPoolAddress"
+  readonly
+  placeholder="Pool address will appear here"
+/>     
+
   <div class="grid">
     <button onclick="approveLiquidityToken()">
       Approve Token
@@ -367,14 +373,6 @@ const guestbookAddress = "0xF339E39c96df9Ca92145123604EEca69C156cd01";
 const defiFactoryAddress = "0xEA808893F9abd6CbfDBd2F67FAFc4cbC0E55F43a";
 const poolFactoryAddress =
 "0xba657f29A2f58b5Ef98B0FCBD60f0403ADD2eD66";
-  const erc20Abi = [
-  "function approve(address spender,uint256 amount) external returns(bool)"
-];
-
-const poolAbi = [
-  "function addLiquidity(uint256 tokenAmount) external payable",
-  "function getReserves() external view returns(uint256,uint256)"
-];
 
 const opnChain = {
   chainId: "0x3D8",
@@ -411,7 +409,17 @@ const defiAbi = [
 ];
 
 const poolFactoryAbi = [
-  "function createPool(address tokenAddress) external returns(address)"
+  "function createPool(address tokenAddress) external returns(address)",
+  "function tokenToPool(address) external view returns(address)"
+];
+
+  const erc20Abi = [
+  "function approve(address spender,uint256 amount) external returns(bool)"
+];
+
+const poolAbi = [
+  "function addLiquidity(uint256 tokenAmount) external payable",
+  "function getReserves() external view returns(uint256,uint256)"
 ];
 
 let provider;
@@ -677,14 +685,24 @@ async function createPool() {
       "Creating pool...";
 
     const tx =
-      await poolFactoryContract.createPool(
-        tokenAddress
-      );
+  await poolFactoryContract.createPool(tokenAddress);
 
-    await tx.wait();
+await tx.wait();
 
-    document.getElementById("status").innerText =
-      "Pool created successfully.";
+const poolAddress =
+  await poolFactoryContract.tokenToPool(
+    tokenAddress
+  );
+
+alert(
+  "Pool Address:\n" +
+  poolAddress
+);
+
+document.getElementById("status").innerText =
+  "Pool Created: " + poolAddress;
+
+document.getElementById("poolTokenAddress").value = "";
 
   } catch(error) {
 
