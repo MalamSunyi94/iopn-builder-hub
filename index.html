@@ -655,57 +655,45 @@ async function getStats() {
 }
 
 async function createPool() {
+
   try {
 
     const ready = await ensureConnected();
     if (!ready) return;
 
     const tokenAddress =
-      document.getElementById("poolTokenAddress").value;
+      document.getElementById(
+        "poolTokenAddress"
+      ).value.trim();
 
-    if (!tokenAddress) {
-      alert("Enter token address.");
+    if (!ethers.utils.isAddress(tokenAddress)) {
+
+      alert("Invalid token address");
       return;
+
     }
 
     document.getElementById("status").innerText =
       "Creating pool...";
 
     const tx =
-      await poolFactoryContract.createPool(tokenAddress);
+      await poolFactoryContract.createPool(
+        tokenAddress
+      );
 
-    const receipt = await tx.wait();
-
-    const event = receipt.events.find(
-      e => e.event === "PoolCreated"
-    );
-
-    const poolAddress = event.args.pool;
+    await tx.wait();
 
     document.getElementById("status").innerText =
-      "Pool created: " + poolAddress;
+      "Pool created successfully.";
+
+  } catch(error) {
+
+    console.log(error);
 
     alert(
-      "Pool created successfully!\n\nPool Address:\n" +
-      poolAddress
+      error.reason ||
+      error.message
     );
-
-    document.getElementById(
-      "liquidityPoolAddress"
-    ).value = poolAddress;
-
-    document.getElementById(
-      "poolTokenAddress"
-    ).value = "";
-
-} catch (error) {
-
-  console.log(error);
-
-  alert(
-    error.reason ||
-    error.data?.message ||
-    error.message);
 
   }
 }
