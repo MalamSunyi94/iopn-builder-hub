@@ -323,7 +323,18 @@
   id="createdPoolAddress"
   readonly
   placeholder="Pool address will appear here"
-/>     
+/>  
+
+   <input id="swapPoolAddress" placeholder="Pool Address" />
+<input id="swapAmount" placeholder="Amount" />
+
+<button onclick="swapNativeToToken()">
+Swap OPN → Token
+</button>
+
+<button onclick="swapTokenToNative()">
+Swap Token → OPN
+</button>
 
   <div class="grid">
     <button onclick="approveLiquidityToken()">
@@ -420,6 +431,13 @@ const poolFactoryAbi = [
 const poolAbi = [
   "function addLiquidity(uint256 tokenAmount) external payable",
   "function getReserves() external view returns(uint256,uint256)"
+];
+
+  const poolAbi = [
+  "function addLiquidity(uint256 tokenAmount) external payable",
+  "function getReserves() external view returns(uint256,uint256)",
+  "function swapNativeToToken() external payable",
+  "function swapTokenToNative(uint256 tokenAmount) external"
 ];
 
 let provider;
@@ -839,11 +857,26 @@ async function addLiquidity() {
   }
 }
 
+  const reserves =
+  await pool.getReserves();
+
+  document.getElementById(
+  "liquidityPoolAddress"
+).value = poolAddress;
+
+  window.open(
+  "https://testnet.iopn.tech/address/" +
+  poolAddress,
+  "_blank");
+
+  }
+  }
+  
+
 function openEngageExplorer() {
   window.open(
     "https://testnet.iopn.tech/address/" + engageAddress,
-    "_blank"
-  );
+    "_blank");
 }
 
 function openGuestbookExplorer() {
