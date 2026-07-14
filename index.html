@@ -336,6 +336,53 @@
   </div>
       </div>
 
+      <div class="section">
+
+<h2>⚡ SimpleDEX Swap</h2>
+
+<p>
+Swap OPN ↔ ERC20 Token using AMM liquidity pool.
+</p>
+
+
+<input
+id="swapToken"
+placeholder="Token Address"
+/>
+
+
+<input
+id="swapAmount"
+placeholder="Amount"
+/>
+
+
+<div class="grid">
+
+<button onclick="swapBuy()">
+Buy Token
+</button>
+
+
+<button onclick="swapSell()">
+Sell Token
+</button>
+
+
+<button class="dark-btn"
+onclick="showPoolInfo()">
+Pool Info
+</button>
+
+
+</div>
+
+
+<pre id="dexInfo"></pre>
+
+
+      </div>
+      
   <p style="margin-top:16px;color:#9f9f9f;">
   Next: Swap OPN ↔ Token
   </p>
@@ -373,6 +420,9 @@ const guestbookAddress = "0xF339E39c96df9Ca92145123604EEca69C156cd01";
 const defiFactoryAddress = "0xF839227181Dfa15607beCC58015C11E0BBDE0Eb1";
 const poolFactoryAddress =
 "0xba657f29A2f58b5Ef98B0FCBD60f0403ADD2eD66";
+  const dexAddress =
+"0x4C1Ef2D6Eba713E0Dc323513B1269015353C2aFA";
+  
 
 const opnChain = {
   chainId: "0x3D8",
@@ -422,13 +472,27 @@ const poolAbi = [
   "function getReserves() external view returns(uint256,uint256)"
 ];
 
+  const dexAbi = [
+
+"function buy(address token) payable",
+
+"function sell(address token,uint256 amount)",
+
+"function quoteBuy(address token,uint256 nativeIn) view returns(uint256)",
+
+"function quoteSell(address token,uint256 tokenIn) view returns(uint256)",
+
+"function getPoolInfo(address token) view returns(address,uint256,uint256,uint256,uint256,bool)"
+];
+  
 let provider;
 let signer;
 let engageContract;
 let guestbookContract;
 let defiContract;
 let poolFactoryContract;
-
+let dexContract;
+  
 function getEthereumProvider() {
   if (window.ethereum?.providers?.length) {
     return window.ethereum.providers.find(p => p.isMetaMask)
@@ -495,6 +559,12 @@ async function connectWallet() {
       signer
     );
 
+    dexContract = new ethers.Contract(
+      dexAddress,
+      dexAbi,
+      signer
+    );
+    
     const address = await signer.getAddress();
 
     document.getElementById("walletBox").innerText =
@@ -839,6 +909,177 @@ async function addLiquidity() {
   }
 }
 
+  async function swapBuy(){
+
+try{
+
+const ready =
+await ensureConnected();
+
+if(!ready)return;
+
+
+const token =
+document.getElementById(
+"swapToken"
+).value;
+
+
+const amount =
+document.getElementById(
+"swapAmount"
+).value;
+
+
+document.getElementById("status").innerText =
+"Buying token...";
+
+
+const tx =
+await dexContract.buy(
+token,
+{
+value:
+ethers.utils.parseEther(amount)
+}
+);
+
+
+await tx.wait();
+
+
+document.getElementById("status").innerText =
+"Buy completed";
+
+
+}
+
+catch(e){
+
+alert(
+e.reason ||
+e.message
+);
+
+}
+
+}
+
+
+
+async function swapSell(){
+
+try{
+
+const ready =
+await ensureConnected();
+
+if(!ready)return;
+
+
+const token =
+document.getElementById(
+"swapToken"
+).value;
+
+
+const amount =
+document.getElementById(
+"swapAmount"
+).value;
+
+
+
+document.getElementById("status").innerText =
+"Selling token...";
+
+
+
+const tx =
+await dexContract.sell(
+token,
+ethers.utils.parseEther(amount)
+);
+
+
+
+await tx.wait();
+
+
+
+document.getElementById("status").innerText =
+"Sell completed";
+
+
+}
+
+catch(e){
+
+alert(
+e.reason ||
+e.message
+);
+
+}
+
+      }
+  async function showPoolInfo(){
+
+try{
+
+const token =
+document.getElementById(
+"swapToken"
+).value;
+
+
+const info =
+await dexContract.getPoolInfo(
+token
+);
+
+
+document.getElementById(
+"dexInfo"
+).innerText =
+
+`
+Creator:
+${info[0]}
+
+
+OPN Reserve:
+${ethers.utils.formatEther(info[1])}
+
+
+Token Reserve:
+${ethers.utils.formatEther(info[2])}
+
+
+Volume:
+${ethers.utils.formatEther(info[3])}
+
+
+Trades:
+${info[4]}
+
+
+Active:
+${info[5]}
+`;
+
+}
+
+catch(e){
+
+alert(
+"Pool not found"
+);
+
+}
+
+  }
+  
 function openEngageExplorer() {
   window.open(
     "https://testnet.iopn.tech/address/" + engageAddress,
