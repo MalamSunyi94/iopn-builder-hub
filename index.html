@@ -452,6 +452,7 @@ const poolFactoryAbi = [
 ];
 
   const poolAbi = [
+  "function addLiquidity(uint256 tokenAmount) payable",
   "function swapNativeToToken() payable",
   "function swapTokenToNative(uint256 tokenAmount)",
   "function getAmountOut(uint256 amountIn,bool nativeToToken) view returns(uint256)",
@@ -469,7 +470,6 @@ let engageContract;
 let guestbookContract;
 let defiContract;
 let poolFactoryContract;
-let dexContract;
   
 function getEthereumProvider() {
   if (window.ethereum?.providers?.length) {
@@ -731,6 +731,9 @@ async function createPool() {
 
     document.getElementById("status").innerText =
       "Creating pool...";
+    document.getElementById("createdPoolAddress").value = poolAddress;
+document.getElementById("liquidityPoolAddress").value = poolAddress;
+document.getElementById("swapPoolAddress").value = poolAddress;
 
     const tx =
   await poolFactoryContract.createPool(tokenAddress);
@@ -885,262 +888,8 @@ async function addLiquidity() {
     "Approve failed");
 
   }
-}
+}     
 
-  async function swapBuy(){
-
-try{
-
-const ready =
-await ensureConnected();
-
-if(!ready)return;
-
-
-const token =
-document.getElementById(
-"swapToken"
-).value;
-
-
-const amount =
-document.getElementById(
-"swapAmount"
-).value;
-
-
-document.getElementById("status").innerText =
-"Buying token...";
-
-
-const tx =
-await dexContract.buy(
-token,
-{
-value:
-ethers.utils.parseEther(amount)
-}
-);
-
-
-await tx.wait();
-
-
-document.getElementById("status").innerText =
-"Buy completed";
-
-
-}
-
-catch(e){
-
-alert(
-e.reason ||
-e.message
-);
-
-}
-
-}
-
-
-
-async function swapSell(){
-async function addLiquidity(){
-
-try{
-
-const token=
-document.getElementById("tokenAddress").value;
-
-const tokenAmount=
-document.getElementById("tokenAmount").value;
-
-const nativeAmount=
-document.getElementById("nativeAmount").value;
-
-document.getElementById("status").innerHTML=
-"Adding Liquidity...";
-
-const tx=
-await dex.addLiquidity(
-
-token,
-
-ethers.utils.parseEther(tokenAmount),
-
-{
-
-value:
-ethers.utils.parseEther(nativeAmount)
-
-}
-
-);
-
-await tx.wait();
-
-document.getElementById("status").innerHTML=
-"Liquidity Added";
-
-}catch(e){
-
-console.log(e);
-
-alert(e.reason||e.message);
-
-}
-
-}
-
-async function buyToken(){
-
-try{
-
-const token=
-document.getElementById("swapToken").value;
-
-const amount=
-document.getElementById("swapAmount").value;
-
-document.getElementById("status").innerHTML=
-"Buying Token...";
-
-const tx=
-await dex.buy(
-
-token,
-
-{
-
-value:
-ethers.utils.parseEther(amount)
-
-}
-
-);
-
-await tx.wait();
-
-document.getElementById("status").innerHTML=
-"Buy Success";
-
-}catch(e){
-
-console.log(e);
-
-alert(e.reason||e.message);
-
-}
-
-}
-
-async function sellToken(){
-
-try{
-
-const token=
-document.getElementById("swapToken").value;
-
-const amount=
-document.getElementById("swapAmount").value;
-
-const erc20=
-new ethers.Contract(
-
-token,
-
-ERC20_ABI,
-
-signer
-
-);
-
-const allowance=
-await erc20.allowance(
-
-await signer.getAddress(),
-
-DEX
-
-);
-
-if(
-
-allowance.lt(
-
-ethers.utils.parseEther(amount)
-
-)
-
-){
-
-const txApprove=
-await erc20.approve(
-
-DEX,
-
-ethers.constants.MaxUint256
-
-);
-
-await txApprove.wait();
-
-}
-
-document.getElementById("status").innerHTML=
-"Selling...";
-
-const tx=
-await dex.sell(
-
-token,
-
-ethers.utils.parseEther(amount)
-
-);
-
-await tx.wait();
-
-document.getElementById("status").innerHTML=
-"Sell Success";
-
-}catch(e){
-
-console.log(e);
-
-alert(e.reason||e.message);
-
-}
-
-}
-
-async function getQuote(){
-
-try{
-
-const token=
-document.getElementById("swapToken").value;
-
-const amount=
-document.getElementById("swapAmount").value;
-
-const quote=
-await dex.getAmountOut(
-
-token,
-
-ethers.utils.parseEther(amount),
-
-true
-
-);
-
-document.getElementById("status").innerHTML=
-
-"Quote : "+
-
-ethers.utils.formatEther(quote)+
 async function swap() {
 
     const poolAddress =
@@ -1219,7 +968,8 @@ async function swap() {
     document.getElementById(
         "swapStatus"
     ).innerText =
-        "Swap Success";
+        "Swap Success"
+  );
 }
   
 function openEngageExplorer() {
