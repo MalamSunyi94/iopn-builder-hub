@@ -338,55 +338,38 @@
 
       <div class="section">
 
-<h2>⚡ SimpleDEX Swap</h2>
-
-<p>
-Swap OPN ↔ ERC20 Token using AMM liquidity pool.
-</p>
-
+<h2>Swap</h2>
 
 <input
-id="swapToken"
-placeholder="Token Address"
+  id="swapPoolAddress"
+  placeholder="Pool Address"
 />
-
 
 <input
-id="swapAmount"
-placeholder="Amount"
+  id="swapTokenAddress"
+  placeholder="Token Address"
 />
 
+<select id="swapType">
+  <option value="native">
+    OPN → Token
+  </option>
 
-<div class="grid">
+  <option value="token">
+    Token → OPN
+  </option>
+</select>
 
-<button onclick="swapBuy()">
-Buy Token
+<input
+  id="swapAmount"
+  placeholder="Amount"
+/>
+
+<button onclick="swap()">
+  Swap
 </button>
 
-
-<button onclick="swapSell()">
-Sell Token
-</button>
-
-
-<button class="dark-btn"
-onclick="showPoolInfo()">
-Pool Info
-</button>
-
-
-</div>
-
-
-<pre id="dexInfo"></pre>
-
-
-      </div>
-      
-  <p style="margin-top:16px;color:#9f9f9f;">
-  Next: Swap OPN ↔ Token
-  </p>
-    </div>
+<p id="swapStatus"></p>
       
     <div class="section">
       <h2>Contracts</h2>
@@ -461,9 +444,11 @@ const poolFactoryAbi = [
 ];
 
   const erc20Abi = [
-  "function approve(address spender,uint256 amount) external returns(bool)"
-  "function addLiquidity(uint256 tokenAmount) external payable",
-  "function getReserves() external view returns(uint256,uint256)"
+"function approve(address spender,uint256 amount) returns(bool)",
+"function transfer(address,uint256) returns(bool)",
+"function transferFrom(address,address,uint256) returns(bool)",
+"function balanceOf(address) view returns(uint256)",
+"function decimals() view returns(uint8)"
 ];
 
   const poolAbi = [
@@ -1156,44 +1141,85 @@ document.getElementById("status").innerHTML=
 "Quote : "+
 
 ethers.utils.formatEther(quote)+
+async function swap() {
 
-" Token";
+    const poolAddress =
+        document.getElementById(
+            "swapPoolAddress"
+        ).value;
 
-}catch(e){
+    const tokenAddress =
+        document.getElementById(
+            "swapTokenAddress"
+        ).value;
 
-alert(e.reason||e.message);
+    const amount =
+        document.getElementById(
+            "swapAmount"
+        ).value;
 
-}
+    const type =
+        document.getElementById(
+            "swapType"
+        ).value;
 
-}
+    const pool =
+        new ethers.Contract(
+            poolAddress,
+            poolAbi,
+            signer
+        );
 
-async function loadPool(){
+    if(type === "native"){
 
-try{
+        const tx =
+            await pool.swapNativeToToken({
 
-const token=
-document.getElementById("poolToken").value;
+                value:
+                ethers.utils.parseEther(amount)
 
-const info=
-await dex.getPoolInfo(token);
+            });
 
-document.getElementById("poolInfo").innerHTML=
+        await tx.wait();
 
-"Creator : "+info[0]+
-const pool = new ethers.Contract(
-    poolAddress,
-    poolAbi,
-    signer
-);
+    }else{
 
-const tx = await pool.swapNativeToToken({
-    value: ethers.utils.parseEther(opnAmount)
-});
+        const token =
+            new ethers.Contract(
+                tokenAddress,
+                erc20Abi,
+                signer
+            );
 
-await tx.wait();
+        await token.approve(
 
-alert("Swap Success!"
-  );
+            poolAddress,
+
+            ethers.utils.parseUnits(
+                amount,
+                18
+            )
+
+        );
+
+        const tx =
+            await pool.swapTokenToNative(
+
+                ethers.utils.parseUnits(
+                    amount,
+                    18
+                )
+
+            );
+
+        await tx.wait();
+
+    }
+
+    document.getElementById(
+        "swapStatus"
+    ).innerText =
+        "Swap Success";
 }
   
 function openEngageExplorer() {
