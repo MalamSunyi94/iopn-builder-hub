@@ -178,6 +178,16 @@
       font-size: 14px;
     }
 
+    select {
+ width:100%;
+ padding:14px;
+ border-radius:14px;
+ background:rgba(255,255,255,0.08);
+ color:white;
+ border:1px solid rgba(255,255,255,0.14);
+ margin-top:10px;
+    }
+
     @media(max-width: 600px) {
       h1 { font-size: 32px; }
       .grid, .stats { grid-template-columns: 1fr; }
@@ -287,6 +297,8 @@
     <button onclick="createPool()">Create Pool</button>
     <button class="dark-btn" onclick="openPoolFactory()">Pool Factory</button>
   </div>
+      
+    </div>
 
       <div class="section">
   <h2>💧 Add Liquidity</h2>
@@ -337,7 +349,6 @@
       </div>
 
       <div class="section">
-
 <h2>Swap</h2>
 
 <input
@@ -441,7 +452,10 @@ const defiAbi = [
 ];
 
 const poolFactoryAbi = [
-  "function createPool(address tokenAddress) external returns(address)",
+  "function event TokenCreated(
+ address indexed creator,
+ address token
+);
   "function tokenToPool(address) external view returns(address)"
 ];
 
@@ -738,11 +752,6 @@ document.getElementById("createdPoolAddress").value = poolAddress;
 document.getElementById("liquidityPoolAddress").value = poolAddress;
 document.getElementById("swapPoolAddress").value = poolAddress;
 
-const poolAddress =
-  await poolFactoryContract.tokenToPool(
-    tokenAddress
-  );
-
 alert(
   "Pool Address:\n" +
   poolAddress
@@ -888,9 +897,12 @@ async function addLiquidity() {
   }
 }     
 
-async function swap() {
+async function swap(){
 
 try{
+
+const ready = await ensureConnected();
+if(!ready) return;
 
 const poolAddress =
 document.getElementById("swapPoolAddress").value;
@@ -935,17 +947,19 @@ signer
 );
 
 
+const approveTx =
 await token.approve(
 poolAddress,
 ethers.utils.parseEther(amount)
 );
+
+await approveTx.wait();
 
 
 const tx =
 await pool.swapTokenToNative(
 ethers.utils.parseEther(amount)
 );
-
 
 await tx.wait();
 
