@@ -370,9 +370,11 @@
 </button>
 
 <p id="swapStatus"></p>
-      
-    <div class="section">
-      <h2>Contracts</h2>
+
+</div>
+
+<div class="section">
+<h2>Contracts</h2>
 
       <p class="contract">
         EngageHub:<br>
@@ -537,11 +539,6 @@ async function connectWallet() {
       signer
     );
 
-    dexContract = new ethers.Contract(
-      dexAddress,
-      dexAbi,
-      signer
-    );
     
     const address = await signer.getAddress();
 
@@ -670,10 +667,10 @@ async function createToken() {
       "Creating token...";
 
     const tx = await defiContract.createToken(
-      name,
-      symbol,
-      supply
-    );
+ name,
+ symbol,
+ ethers.utils.parseEther(supply)
+);
 
     await tx.wait();
 
@@ -729,16 +726,17 @@ async function createPool() {
 
     }
 
-    document.getElementById("status").innerText =
-      "Creating pool...";
-    document.getElementById("createdPoolAddress").value = poolAddress;
-document.getElementById("liquidityPoolAddress").value = poolAddress;
-document.getElementById("swapPoolAddress").value = poolAddress;
-
     const tx =
   await poolFactoryContract.createPool(tokenAddress);
 
 await tx.wait();
+
+const poolAddress =
+  await poolFactoryContract.tokenToPool(tokenAddress);
+
+document.getElementById("createdPoolAddress").value = poolAddress;
+document.getElementById("liquidityPoolAddress").value = poolAddress;
+document.getElementById("swapPoolAddress").value = poolAddress;
 
 const poolAddress =
   await poolFactoryContract.tokenToPool(
@@ -892,84 +890,79 @@ async function addLiquidity() {
 
 async function swap() {
 
-    const poolAddress =
-        document.getElementById(
-            "swapPoolAddress"
-        ).value;
+try{
 
-    const tokenAddress =
-        document.getElementById(
-            "swapTokenAddress"
-        ).value;
+const poolAddress =
+document.getElementById("swapPoolAddress").value;
 
-    const amount =
-        document.getElementById(
-            "swapAmount"
-        ).value;
+const tokenAddress =
+document.getElementById("swapTokenAddress").value;
 
-    const type =
-        document.getElementById(
-            "swapType"
-        ).value;
+const amount =
+document.getElementById("swapAmount").value;
 
-    const pool =
-        new ethers.Contract(
-            poolAddress,
-            poolAbi,
-            signer
-        );
+const type =
+document.getElementById("swapType").value;
 
-    if(type === "native"){
 
-        const tx =
-            await pool.swapNativeToToken({
+const pool =
+new ethers.Contract(
+poolAddress,
+poolAbi,
+signer
+);
 
-                value:
-                ethers.utils.parseEther(amount)
 
-            });
+if(type==="native"){
 
-        await tx.wait();
+const tx =
+await pool.swapNativeToToken({
+value:
+ethers.utils.parseEther(amount)
+});
 
-    }else{
+await tx.wait();
 
-        const token =
-            new ethers.Contract(
-                tokenAddress,
-                erc20Abi,
-                signer
-            );
 
-        await token.approve(
+}else{
 
-            poolAddress,
 
-            ethers.utils.parseUnits(
-                amount,
-                18
-            )
+const token =
+new ethers.Contract(
+tokenAddress,
+erc20Abi,
+signer
+);
 
-        );
 
-        const tx =
-            await pool.swapTokenToNative(
+await token.approve(
+poolAddress,
+ethers.utils.parseEther(amount)
+);
 
-                ethers.utils.parseUnits(
-                    amount,
-                    18
-                )
 
-            );
+const tx =
+await pool.swapTokenToNative(
+ethers.utils.parseEther(amount)
+);
 
-        await tx.wait();
 
-    }
+await tx.wait();
 
-    document.getElementById(
-        "swapStatus"
-    ).innerText =
-        "Swap Success"
-  );
+}
+
+
+document.getElementById("swapStatus").innerText =
+"Swap success";
+
+
+}catch(e){
+
+console.log(e);
+alert(e.message);
+
+}
+
 }
   
 function openEngageExplorer() {
