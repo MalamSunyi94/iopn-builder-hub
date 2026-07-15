@@ -420,9 +420,6 @@ const guestbookAddress = "0xF339E39c96df9Ca92145123604EEca69C156cd01";
 const defiFactoryAddress = "0xF839227181Dfa15607beCC58015C11E0BBDE0Eb1";
 const poolFactoryAddress =
 "0xba657f29A2f58b5Ef98B0FCBD60f0403ADD2eD66";
-  const dexAddress =
-"0x4C1Ef2D6Eba713E0Dc323513B1269015353C2aFA";
-  
 
 const opnChain = {
   chainId: "0x3D8",
@@ -465,24 +462,20 @@ const poolFactoryAbi = [
 
   const erc20Abi = [
   "function approve(address spender,uint256 amount) external returns(bool)"
-];
-
-const poolAbi = [
   "function addLiquidity(uint256 tokenAmount) external payable",
   "function getReserves() external view returns(uint256,uint256)"
 ];
 
-  const dexAbi = [
+  const poolAbi = [
+  "function swapNativeToToken() payable",
+  "function swapTokenToNative(uint256 tokenAmount)",
+  "function getAmountOut(uint256 amountIn,bool nativeToToken) view returns(uint256)",
+  "function getReserves() view returns(uint256,uint256)"
+];
 
-"function buy(address token) payable",
-
-"function sell(address token,uint256 amount)",
-
-"function quoteBuy(address token,uint256 nativeIn) view returns(uint256)",
-
-"function quoteSell(address token,uint256 tokenIn) view returns(uint256)",
-
-"function getPoolInfo(address token) view returns(address,uint256,uint256,uint256,uint256,bool)"
+const tokenAbi = [
+  "function approve(address spender,uint256 amount) returns(bool)",
+  "function decimals() view returns(uint8)"
 ];
   
 let provider;
@@ -1187,84 +1180,21 @@ await dex.getPoolInfo(token);
 document.getElementById("poolInfo").innerHTML=
 
 "Creator : "+info[0]+
-
-"<br><br>Reserve OPN : "+
-
-ethers.utils.formatEther(info[1])+
-
-"<br><br>Reserve Token : "+
-
-ethers.utils.formatEther(info[2])+
-
-"<br><br>Exists : "+
-
-info[3];
-
-}catch(e){
-
-alert(e.reason||e.message);
-
-}
-
-}
-
-      }
-  async function showPoolInfo(){
-
-try{
-
-const token =
-document.getElementById(
-"swapToken"
-).value;
-
-
-const info =
-await dexContract.getPoolInfo(
-token
+const pool = new ethers.Contract(
+    poolAddress,
+    poolAbi,
+    signer
 );
 
+const tx = await pool.swapNativeToToken({
+    value: ethers.utils.parseEther(opnAmount)
+});
 
-document.getElementById(
-"dexInfo"
-).innerText =
+await tx.wait();
 
-`
-Creator:
-${info[0]}
-
-
-OPN Reserve:
-${ethers.utils.formatEther(info[1])}
-
-
-Token Reserve:
-${ethers.utils.formatEther(info[2])}
-
-
-Volume:
-${ethers.utils.formatEther(info[3])}
-
-
-Trades:
-${info[4]}
-
-
-Active:
-${info[5]}
-`;
-
+alert("Swap Success!"
+  );
 }
-
-catch(e){
-
-alert(
-"Pool not found"
-);
-
-}
-
-  }
   
 function openEngageExplorer() {
   window.open(
