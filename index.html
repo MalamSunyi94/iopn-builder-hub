@@ -440,9 +440,10 @@ const defiAbi = [
 ];
 
 const poolFactoryAbi = [
-  "function createPool(address tokenAddress) external returns(address)"
+"function createPool(address tokenAddress) external returns(address)",
+"function tokenToPool(address) view returns(address)"
 ];
-
+  
 const erc20Abi = [
 "function approve(address spender,uint256 amount) returns(bool)",
 "function transfer(address,uint256) returns(bool)",
@@ -452,11 +453,11 @@ const erc20Abi = [
 ];
 
   const poolAbi = [
-  "function addLiquidity(uint256 tokenAmount) payable",
-  "function swapNativeToToken() payable",
-  "function swapTokenToNative(uint256 tokenAmount)",
-  "function getAmountOut(uint256 amountIn,bool nativeToToken) view returns(uint256)",
-  "function getReserves() view returns(uint256,uint256)"
+"function addLiquidity(uint256 tokenAmount) external payable",
+"function swapNativeToToken() external payable",
+"function swapTokenToNative(uint256 tokenAmount) external",
+"function getReserves() view returns(uint256,uint256)",
+"function getAmountOut(uint256,bool) view returns(uint256)"
 ];
 
 const tokenAbi = [
@@ -670,6 +671,19 @@ async function createToken() {
     );
 
     await tx.wait();
+    const myTokens =
+await defiContract.getMyTokens();
+
+const tokenAddress =
+myTokens[myTokens.length - 1];
+
+document.getElementById("poolTokenAddress").value =
+tokenAddress;
+
+document.getElementById("liquidityTokenAddress").value =
+tokenAddress;
+
+alert("Token Address:\n" + tokenAddress);
 
     document.getElementById("status").innerText =
       "Token created successfully.";
@@ -725,14 +739,63 @@ async function createPool() {
 
     await tx.wait();
 
-    document.getElementById("status").innerText =
-      "Pool created successfully.";
+const poolAddress =
+await poolFactoryContract.tokenToPool(tokenAddress);
+
+document.getElementById("createdPoolAddress").value =
+poolAddress;
+
+document.getElementById("liquidityPoolAddress").value =
+poolAddress;
+
+document.getElementById("status").innerText =
+"Pool Created";
 
     document.getElementById("poolTokenAddress").value = "";
 
   } catch (error) {
     alert("Pool creation failed. Make sure the token address is valid and not already used.");
   }
+}
+
+async function approveLiquidityToken(){
+
+  try{
+
+    const ready = await ensureConnected();
+    if(!ready) return;
+
+    const tokenAddress =
+      document.getElementById("liquidityTokenAddress").value;
+
+    const poolAddress =
+      document.getElementById("liquidityPoolAddress").value;
+
+    const amount =
+      document.getElementById("liquidityTokenAmount").value;
+
+    const token = new ethers.Contract(
+      tokenAddress,
+      erc20Abi,
+      signer
+    );
+
+    const tx = await token.approve(
+      poolAddress,
+      ethers.utils.parseEther(amount)
+    );
+
+    await tx.wait();
+
+    alert("Approve Success");
+
+  }catch(e){
+
+    console.log(e);
+    alert(e.reason || e.message);
+
+  }
+
 }
 
 async function addLiquidity() {
