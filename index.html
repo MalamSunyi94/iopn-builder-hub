@@ -366,15 +366,16 @@ select option{
   placeholder="Token Address"
 />
 
-<select id="swapType">
-  <option value="native">
-    OPN → Token
-  </option>
+<<div class="grid">
+    <button id="nativeBtn" onclick="setSwapType('native')">
+        OPN → Token
+    </button>
 
-  <option value="token">
-    Token → OPN
-  </option>
-</select>
+    <button id="tokenBtn" class="dark-btn"
+        onclick="setSwapType('token')">
+        Token → OPN
+    </button>
+</div>
 
 <input
   id="swapAmount"
@@ -487,6 +488,18 @@ let engageContract;
 let guestbookContract;
 let defiContract;
 let poolFactoryContract;
+let swapType = "native";
+
+function setSwapType(type){
+
+    swapType = type;
+
+    document.getElementById("nativeBtn").className =
+        type=="native" ? "" : "dark-btn";
+
+    document.getElementById("tokenBtn").className =
+        type=="token" ? "" : "dark-btn";
+}
 
 function getEthereumProvider() {
   if (window.ethereum?.providers?.length) {
@@ -891,8 +904,7 @@ if (!ready) return;
     const amount =
     document.getElementById("swapAmount").value;
 
-    const type =
-    document.getElementById("swapType").value;
+    const type = swapType;
 
     const pool =
     new ethers.Contract(
