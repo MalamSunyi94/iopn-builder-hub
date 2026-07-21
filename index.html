@@ -863,83 +863,60 @@ async function addLiquidity() {
 
 async function swap(){
 
-try{
+    const poolAddress =
+    document.getElementById("swapPoolAddress").value;
 
-const ready = await ensureConnected();
-if(!ready) return;
+    const tokenAddress =
+    document.getElementById("swapTokenAddress").value;
 
-const poolAddress =
-document.getElementById("swapPoolAddress").value;
+    const amount =
+    document.getElementById("swapAmount").value;
 
-const tokenAddress =
-document.getElementById("swapTokenAddress").value;
+    const type =
+    document.getElementById("swapType").value;
 
-const amount =
-document.getElementById("swapAmount").value;
+    const pool =
+    new ethers.Contract(
+        poolAddress,
+        poolAbi,
+        signer
+    );
 
-const type =
-document.getElementById("swapType").value;
+    if(type=="native"){
 
+        const tx =
+        await pool.swapNativeToToken({
+            value: ethers.utils.parseEther(amount)
+        });
 
-const pool =
-new ethers.Contract(
-poolAddress,
-poolAbi,
-signer
-);
+        await tx.wait();
 
+    }else{
 
-if(type==="native"){
+        const token =
+        new ethers.Contract(
+            tokenAddress,
+            erc20Abi,
+            signer
+        );
 
-const tx =
-await pool.swapNativeToToken({
-value:
-ethers.utils.parseEther(amount)
-});
+        const approveTx =
+        await token.approve(
+            poolAddress,
+            ethers.utils.parseEther(amount)
+        );
 
-await tx.wait();
+        await approveTx.wait();
 
+        const tx =
+        await pool.swapTokenToNative(
+            ethers.utils.parseEther(amount)
+        );
 
-}else{
+        await tx.wait();
+    }
 
-
-const token =
-new ethers.Contract(
-tokenAddress,
-erc20Abi,
-signer
-);
-
-
-const approveTx =
-await token.approve(
-poolAddress,
-ethers.utils.parseEther(amount)
-);
-
-await approveTx.wait();
-
-
-const tx =
-await pool.swapTokenToNative(
-ethers.utils.parseEther(amount)
-);
-
-await tx.wait();
-
-}
-
-
-document.getElementById("swapStatus").innerText =
-"Swap success";
-
-
-}catch(e){
-
-console.log(e);
-alert(e.message);
-
-}
+    alert("Swap Success");
 }
 
 function openEngageExplorer() {
