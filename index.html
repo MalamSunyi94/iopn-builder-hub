@@ -863,6 +863,9 @@ async function addLiquidity() {
 
 async function swap(){
 
+    const ready = await ensureConnected();
+if (!ready) return;
+  
     const poolAddress =
     document.getElementById("swapPoolAddress").value;
 
